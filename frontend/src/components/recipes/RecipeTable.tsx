@@ -11,7 +11,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import type { Product, RecipeItem } from '@/types/stockpilot.types';
+import type { Product } from '@/types/stockpilot.types';
 
 interface RecipeTableProps {
   products: Product[];

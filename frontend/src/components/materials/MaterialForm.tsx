@@ -115,7 +115,7 @@ export default function MaterialForm({ onSuccess }: MaterialFormProps) {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="mat-unit">Birim</Label>
-                <Select value={unit} onValueChange={setUnit}>
+                <Select value={unit} onValueChange={(v) => { if (v !== null) setUnit(v); }}>
                   <SelectTrigger className="w-full h-9">
                     <SelectValue placeholder="Birim seçin" />
                   </SelectTrigger>

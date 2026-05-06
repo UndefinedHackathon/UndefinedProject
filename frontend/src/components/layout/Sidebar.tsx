@@ -1,5 +1,6 @@
 // [AI-Agent: Plan] Sidebar navigasyon komponenti — tüm sayfalar arası geçiş
 import { NavLink } from 'react-router-dom';
+import { ThemeToggle } from '@/components/theme-toggle';
 import {
   LayoutDashboard,
   Package,
@@ -20,7 +21,7 @@ const MENU_ITEMS = [
 
 export default function Sidebar() {
   return (
-    <aside className="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col bg-sidebar-background text-sidebar-foreground">
+    <aside className="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col bg-sidebar-background text-sidebar-foreground transition-colors duration-300">
       {/* Logo */}
       <div className="flex h-16 items-center gap-2 border-b border-sidebar-border px-6">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sidebar-primary text-white font-bold text-sm">
@@ -50,10 +51,11 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-sidebar-border p-4">
+      <div className="border-t border-sidebar-border p-4 flex items-center justify-between">
         <p className="text-xs text-sidebar-foreground/40">
           StockPilot AI v1.0 — MVP
         </p>
+        <ThemeToggle />
       </div>
     </aside>
   );

@@ -27,7 +27,7 @@ export default function SalesTable({ sales, products, onDelete, loading }: Sales
         <TrendingUp className="h-12 w-12 text-muted-foreground/50 mb-4" />
         <h3 className="text-lg font-semibold">Bu tarihte satış kaydı yok</h3>
         <p className="text-sm text-muted-foreground mt-1">
-          Satış ekle butonuna tıklayarak günlük satış girişi yapın.
+          Verileri Getir butonuna tıklayarak günlük satış verilerini yükleyin.
         </p>
       </div>
     );

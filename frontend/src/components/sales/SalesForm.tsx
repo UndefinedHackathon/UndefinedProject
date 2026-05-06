@@ -103,7 +103,7 @@ export default function SalesForm({ products, onSuccess, selectedDate }: SalesFo
 
             <div className="space-y-2">
               <Label>Ürün</Label>
-              <Select value={productId} onValueChange={setProductId}>
+              <Select value={productId} onValueChange={(v) => { if (v !== null) setProductId(v); }}>
                 <SelectTrigger className="w-full h-9">
                   <SelectValue placeholder="Ürün seçin" />
                 </SelectTrigger>

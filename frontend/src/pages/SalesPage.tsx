@@ -1,10 +1,10 @@
 // [AI-Agent: Skills] Satışlar sayfası — Tarih seçimi, satış girişi, günlük özet
 import { useState, useEffect } from 'react';
-import { Loader2, TrendingUp, RefreshCw, CalendarDays } from 'lucide-react';
+import { Loader2, TrendingUp, RefreshCw, CalendarDays, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import SalesForm from '@/components/sales/SalesForm';
+
 import SalesTable from '@/components/sales/SalesTable';
 import api from '@/lib/api';
 import type { Product, DailySale } from '@/types/stockpilot.types';
@@ -41,9 +41,7 @@ export default function SalesPage() {
     fetchData(selectedDate);
   }, [selectedDate]);
 
-  const handleAdd = (newSale: DailySale) => {
-    setSales((prev) => [...prev, newSale]);
-  };
+
 
   const handleDelete = async (id: number) => {
     setDeleting(true);
@@ -83,11 +81,10 @@ export default function SalesPage() {
             <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
             Yenile
           </Button>
-          <SalesForm
-            products={products}
-            onSuccess={handleAdd}
-            selectedDate={selectedDate}
-          />
+          <Button onClick={() => fetchData(selectedDate)} disabled={loading}>
+            <Download className="mr-2 h-4 w-4" />
+            Verileri Getir
+          </Button>
         </div>
       </div>
 

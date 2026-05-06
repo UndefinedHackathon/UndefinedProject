@@ -1,5 +1,5 @@
 // [AI-Agent: Skills] Reçete ekleme formu — Ürün + Malzeme seçip miktar girerek reçete satırı oluşturur
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Plus, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -109,7 +109,7 @@ export default function RecipeForm({ products, ingredients, onSuccess }: RecipeF
 
             <div className="space-y-2">
               <Label>Ürün</Label>
-              <Select value={productId} onValueChange={setProductId}>
+              <Select value={productId} onValueChange={(v) => { if (v !== null) setProductId(v); }}>
                 <SelectTrigger className="w-full h-9">
                   <SelectValue placeholder="Ürün seçin" />
                 </SelectTrigger>
@@ -125,7 +125,7 @@ export default function RecipeForm({ products, ingredients, onSuccess }: RecipeF
 
             <div className="space-y-2">
               <Label>Malzeme</Label>
-              <Select value={ingredientId} onValueChange={setIngredientId}>
+              <Select value={ingredientId} onValueChange={(v) => { if (v !== null) setIngredientId(v); }}>
                 <SelectTrigger className="w-full h-9">
                   <SelectValue placeholder="Malzeme seçin" />
                 </SelectTrigger>

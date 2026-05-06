@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Loader2, BookOpen, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import RecipeForm from '@/components/recipes/RecipeForm';
 import RecipeTable from '@/components/recipes/RecipeTable';
 import api from '@/lib/api';

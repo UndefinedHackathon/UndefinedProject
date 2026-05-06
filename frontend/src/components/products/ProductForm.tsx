@@ -139,7 +139,7 @@ export default function ProductForm({ onSuccess }: ProductFormProps) {
 
               <div className="space-y-2">
                 <Label htmlFor="prod-category">Kategori</Label>
-                <Select value={category} onValueChange={setCategory}>
+                <Select value={category} onValueChange={(v) => { if (v !== null) setCategory(v); }}>
                   <SelectTrigger className="w-full h-9">
                     <SelectValue placeholder="Kategori seçin" />
                   </SelectTrigger>
