@@ -3,8 +3,10 @@
 
 import { Pool, QueryResult, QueryResultRow } from 'pg';
 import dotenv from 'dotenv';
+import path from 'path';
 
-dotenv.config();
+// Global .env root klasöründe
+dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 /**
  * PostgreSQL bağlantı havuzu.
