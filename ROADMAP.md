@@ -194,12 +194,12 @@ UndefinedProject/
 - [ ] Zustand store copilot slice'ı bağla
 
 #### 🟠 Samet — Copilot Backend
-- [ ] `copilotService.ts` — system prompt + context hazırlama
-- [ ] `copilot.route.ts` — POST /api/copilot endpoint'i
-  - [ ] Son analysis_results'u context olarak al
-  - [ ] Gemma'ya gönder, cevap al
-  - [ ] Fallback cevap mekanizması
-- [ ] copilot.schema.ts — Zod validation
+- [x] `copilotService.ts` — system prompt + context hazırlama
+- [x] `copilot.route.ts` — POST /api/copilot endpoint'i
+  - [x] Son analysis_results'u context olarak al
+  - [x] Gemma'ya gönder, cevap al
+  - [x] Fallback cevap mekanizması
+- [x] copilot.schema.ts — Zod validation
 
 #### 🟢 Emre — Destek
 - [ ] analysis_results için helper query (son analiz çekme)

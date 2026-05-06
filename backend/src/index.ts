@@ -16,6 +16,7 @@ import dotenv from 'dotenv';
 // 3. Proje dosyaları
 import pool from './db/pool';
 import analyzeRouter from './routes/analyze.route';
+import copilotRouter from './routes/copilot.route';
 import materialsRouter from './routes/materials.route';
 import productsRouter from './routes/products.route';
 
@@ -79,11 +80,9 @@ app.use('/api/products',   productsRouter);
 
 // Aşama 3 — Samet: Analyze route aktif
 app.use('/api/analyze', analyzeRouter);
-// Aşama 3 — Samet tarafından eklenecek:
-// app.use('/api/analyze',    analyzeRouter);
 
-// Aşama 4 — Samet tarafından eklenecek:
-// app.use('/api/copilot',    copilotRouter);
+// Aşama 4 — Samet: Copilot route aktif
+app.use('/api/copilot', copilotRouter);
 
 // Aşama 5 — Opsiyonel:
 // app.use('/api/n8n',        n8nRouter);
