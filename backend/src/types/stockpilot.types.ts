@@ -33,6 +33,7 @@ export interface StokKalemi {
   id: number;
   ingredientId: number;
   currentStock: number;
+  physicalStock?: number;  // Fiziksel sayım (reçete sapması hesabı için, opsiyonel)
 }
 
 /** Günlük Satış Kaydı */
@@ -168,6 +169,7 @@ export interface InventoryRow {
   id: number;
   ingredient_id: number;
   current_stock: string;
+  physical_stock: string | null;  // Fiziksel sayım (reçete sapması için, opsiyonel)
   updated_at: Date;
 }
 
