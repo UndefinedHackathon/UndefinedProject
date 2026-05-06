@@ -58,7 +58,7 @@ export default function MaterialForm({ onSuccess }: MaterialFormProps) {
 
     setLoading(true);
     try {
-      const res = await api.post('/ingredients', {
+      const res = await api.post('/materials', {
         name: name.trim(),
         unit,
         unit_cost: parseFloat(unitCost) || 0,
