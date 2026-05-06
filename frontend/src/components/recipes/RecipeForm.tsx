@@ -35,19 +35,17 @@ export default function RecipeForm({ products, ingredients, onSuccess }: RecipeF
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Çoklu ürün seçimi
+  // Çoklu ürün ve çoklu malzeme seçimi
   const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);
-  const [ingredientId, setIngredientId] = useState('');
-  const [quantity, setQuantity] = useState('');
+  const [items, setItems] = useState<Array<{ ingredientId: string; quantity: string }>>([
+    { ingredientId: '', quantity: '' }
+  ]);
 
   const resetForm = () => {
     setSelectedProductIds([]);
-    setIngredientId('');
-    setQuantity('');
+    setItems([{ ingredientId: '', quantity: '' }]);
     setError('');
   };
-
-  const selectedIngredient = ingredients.find((i) => i.id === Number(ingredientId));
 
   /** Ürün toggle — seçiliyse kaldır, değilse ekle */
   const toggleProduct = (id: number) => {
@@ -73,37 +71,35 @@ export default function RecipeForm({ products, ingredients, onSuccess }: RecipeF
       setError('En az bir ürün seçiniz.');
       return;
     }
-    if (!ingredientId) {
-      setError('Malzeme seçiniz.');
-      return;
-    }
-    if (!quantity || parseFloat(quantity) <= 0) {
-      setError('Geçerli bir miktar girin.');
+    
+    const validItems = items.filter(i => i.ingredientId && i.quantity && parseFloat(i.quantity) > 0);
+    if (validItems.length === 0) {
+      setError('En az bir geçerli malzeme ve miktar girin.');
       return;
     }
 
     setLoading(true);
     try {
-      if (selectedProductIds.length === 1) {
-        // Tekli ürün — eski format
-        const res = await api.post('/recipes', {
-          product_id: selectedProductIds[0],
-          ingredient_id: Number(ingredientId),
-          quantity_per_unit: parseFloat(quantity),
-        });
-        onSuccess(res.data.data);
-      } else {
-        // Çoklu ürün — yeni format (product_ids)
-        const res = await api.post('/recipes', {
-          product_ids: selectedProductIds,
-          ingredient_id: Number(ingredientId),
-          quantity_per_unit: parseFloat(quantity),
-        });
-        // İlk eklenen satırı callback olarak gönder
-        if (Array.isArray(res.data.data) && res.data.data.length > 0) {
-          onSuccess(res.data.data[0]);
-        }
+      // Çoklu ürün için Promise.all ile ayrı ayrı bulk request atıyoruz
+      const promises = selectedProductIds.map((pid) =>
+        api.post('/recipes', {
+          product_id: pid,
+          items: validItems.map(i => ({
+            ingredient_id: Number(i.ingredientId),
+            quantity_per_unit: parseFloat(i.quantity),
+          })),
+        })
+      );
+
+      const results = await Promise.all(promises);
+      
+      // Herhangi bir ürün için eklenen ilk kaydı onSuccess'e dön (yenilemeyi tetiklemek için)
+      if (results.length > 0 && Array.isArray(results[0].data.data) && results[0].data.data.length > 0) {
+        onSuccess(results[0].data.data[0]);
+      } else if (results.length > 0 && results[0].data.data) {
+        onSuccess(results[0].data.data as any);
       }
+      
       resetForm();
       setOpen(false);
     } catch {
@@ -200,47 +196,99 @@ export default function RecipeForm({ products, ingredients, onSuccess }: RecipeF
               )}
             </div>
 
-            {/* Malzeme Seçimi */}
-            <div className="space-y-2">
-              <Label>Malzeme</Label>
-              <Select value={ingredientId} onValueChange={(v) => { if (v !== null) setIngredientId(v); }}>
-                <SelectTrigger className="w-full h-9">
-                  <SelectValue placeholder="Malzeme seçin" />
-                </SelectTrigger>
-                <SelectContent>
-                  {ingredients.map((i) => (
-                    <SelectItem key={i.id} value={String(i.id)}>
-                      {i.name} ({i.unit})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Miktar */}
-            <div className="space-y-2">
-              <Label htmlFor="recipe-qty">
-                Miktar (1 ürün için){selectedIngredient ? ` — ${selectedIngredient.unit}` : ''}
-              </Label>
-              <Input
-                id="recipe-qty"
-                type="number"
-                step="0.0001"
-                min="0.0001"
-                placeholder="Örn: 0.25"
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
-                required
-                disabled={loading}
-              />
-              {selectedIngredient && quantity && parseFloat(quantity) > 0 && (
-                <p className="text-xs text-muted-foreground">
-                  Birim maliyet katkısı: ₺{(parseFloat(quantity) * Number(selectedIngredient.unit_cost)).toFixed(2)}
-                  {selectedProductIds.length > 1 && (
-                    <span> × {selectedProductIds.length} ürün</span>
-                  )}
-                </p>
-              )}
+            {/* Malzeme Listesi */}
+            <div className="space-y-4 pt-2 border-t">
+              <div className="flex items-center justify-between">
+                <Label>Kullanılacak Malzemeler</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-xs px-2"
+                  onClick={() => setItems([...items, { ingredientId: '', quantity: '' }])}
+                >
+                  <Plus className="mr-1 h-3 w-3" /> Malzeme Ekle
+                </Button>
+              </div>
+              
+              <div className="space-y-3 max-h-48 overflow-y-auto pr-1">
+                {items.map((item, index) => {
+                  const selectedIng = ingredients.find(i => i.id === Number(item.ingredientId));
+                  return (
+                    <div key={index} className="flex flex-col gap-2 p-3 border rounded-md relative group bg-muted/20">
+                      {items.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => setItems(items.filter((_, i) => i !== index))}
+                          className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                          title="Kaldır"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                        </button>
+                      )}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <Label className="text-[11px] uppercase tracking-wider text-muted-foreground">Malzeme</Label>
+                          <Select 
+                            value={item.ingredientId} 
+                            onValueChange={(v) => {
+                              const newItems = [...items];
+                              newItems[index].ingredientId = v;
+                              setItems(newItems);
+                            }}
+                          >
+                            <SelectTrigger className="w-full h-8 text-sm">
+                              <SelectValue placeholder="Seçiniz" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {ingredients.map((i) => (
+                                <SelectItem key={i.id} value={String(i.id)}>
+                                  {i.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                            Miktar {selectedIng ? `(${selectedIng.unit})` : ''}
+                          </Label>
+                          <Input
+                            type="number"
+                            step="0.0001"
+                            min="0.0001"
+                            placeholder="Örn: 0.25"
+                            value={item.quantity}
+                            onChange={(e) => {
+                              const newItems = [...items];
+                              newItems[index].quantity = e.target.value;
+                              setItems(newItems);
+                            }}
+                            className="h-8 text-sm"
+                            required
+                            disabled={loading}
+                          />
+                        </div>
+                      </div>
+                      {selectedIng && item.quantity && parseFloat(item.quantity) > 0 && (
+                        <div className="flex justify-between items-center mt-1 pt-1 border-t border-muted">
+                          <span className="text-[10px] text-muted-foreground">
+                            {selectedIng.unit_cost} ₺ / {selectedIng.unit}
+                          </span>
+                          <span className="text-xs font-medium text-foreground">
+                            Maliyet: ₺{(parseFloat(item.quantity) * Number(selectedIng.unit_cost)).toFixed(2)}
+                            {selectedProductIds.length > 1 && (
+                              <span className="text-muted-foreground text-[10px] font-normal ml-1">
+                                (Ürün başı)
+                              </span>
+                            )}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </form>
