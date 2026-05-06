@@ -87,7 +87,7 @@ UndefinedProject/
 
 ## 🔀 Git Branch Stratejisi
 
-| Branch | Sorumlu | Açıklama |
+| Branch | Sorumlu | Açıklama 
 |--------|---------|----------|
 | `main` | Korumalı | Doğrudan push yasak. Sadece PR ile merge. |
 | `dev` | Ortak | Geliştirme ana dalı |

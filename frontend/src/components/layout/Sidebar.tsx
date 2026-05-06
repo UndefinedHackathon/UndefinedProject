@@ -27,7 +27,7 @@ export default function Sidebar() {
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sidebar-primary text-white font-bold text-sm">
           SP
         </div>
-        <span className="text-lg font-semibold">StockPilot AI</span>
+        <span className="text-lg font-semibold">StockPilot</span>
       </div>
 
       {/* Navigation */}
@@ -53,7 +53,7 @@ export default function Sidebar() {
       {/* Footer */}
       <div className="border-t border-sidebar-border p-4 flex items-center justify-between">
         <p className="text-xs text-sidebar-foreground/40">
-          StockPilot AI v1.0 — MVP
+          StockPilot v1.0 — MVP
         </p>
         <ThemeToggle />
       </div>
