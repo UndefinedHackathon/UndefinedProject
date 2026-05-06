@@ -99,7 +99,7 @@ UndefinedProject/
 
 ## ⏱️ Geliştirme Aşamaları (5 Saat)
 
-### AŞAMA 1 — Temel Kurulum (0:00–0:45)
+## AŞAMA 1 — Temel Kurulum (0:00–0:45)
 
 #### 🟢 Emre — PostgreSQL & Backend Kurulumu
 - [ ] Express + TypeScript projesi oluştur (`backend/`)
