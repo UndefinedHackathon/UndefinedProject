@@ -8,6 +8,7 @@ import { Router, Request, Response } from 'express';
 // Proje dosyaları
 import { hesaplaGunlukAnaliz } from '../services/erpHesapMotoru';
 import { generateYoneticiOzeti } from '../services/gemmaService';
+import { getLastAnalysis } from '../services/databaseService';
 import { query } from '../db/pool';
 import type {
   Urun, Malzeme, ReceteKalemi, StokKalemi, GunlukSatis,
@@ -205,29 +206,15 @@ router.post('/', async (req: Request, res: Response) => {
 // GET /api/analyze/latest — Son Analiz Sonucunu Getir
 // ═══════════════════════════════════════════════════════
 
+// [AI-Agent: Skills] databaseService.getLastAnalysis() helper'ı kullanılıyor.
+// Tek kaynak prensibi: analysis_results sorguları databaseService üzerinden yapılır.
 /**
  * En son kaydedilen analiz sonucunu döndürür.
  * Dashboard ilk yüklendiğinde veya Copilot context için kullanılır.
  */
 router.get('/latest', async (_req: Request, res: Response) => {
   try {
-    const result = await query<AnalysisResultRow>(
-      'SELECT * FROM analysis_results ORDER BY created_at DESC LIMIT 1'
-    );
-
-    if (result.rows.length === 0) {
-      res.json({
-        success: true,
-        data: null,
-      });
-      return;
-    }
-
-    const row = result.rows[0];
-    const analizSonucu: AnalizSonucu = {
-      ...(row.result_data as AnalizSonucu),
-      yoneticiyeOzet: row.ai_summary || undefined,
-    };
+    const analizSonucu = await getLastAnalysis();
 
     res.json({
       success: true,
