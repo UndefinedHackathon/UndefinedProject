@@ -18,6 +18,8 @@ import pool from './db/pool';
 import analyzeRouter from './routes/analyze.route';
 import materialsRouter from './routes/materials.route';
 import productsRouter from './routes/products.route';
+import recipesRouter from './routes/recipes.route';
+import salesRouter from './routes/sales.route';
 
 // .env dosyasını yükle (Global .env root klasöründe)
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
@@ -74,8 +76,8 @@ app.get('/api/health', async (_req, res) => {
 // Aşama 2 — CRUD route'ları (Emre)
 app.use('/api/materials',  materialsRouter);
 app.use('/api/products',   productsRouter);
-// app.use('/api/recipes',    recipesRouter);   // TODO: Aşama 2
-// app.use('/api/sales',      salesRouter);     // TODO: Aşama 2
+app.use('/api/recipes',    recipesRouter);
+app.use('/api/sales',      salesRouter);
 
 // Aşama 3 — Samet: Analyze route aktif
 app.use('/api/analyze', analyzeRouter);
