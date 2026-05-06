@@ -1,18 +1,11 @@
-// [AI-Agent: Plan] Ortak tip tanımları Plan Agent tarafından oluşturulmuştur.
-// Manuel revizyon: Samet tarafından kontrol edilecek.
-
-// ============================================================
-// StockPilot AI — Ortak Tip Tanımları
-// Bu dosya frontend ve backend'de BİREBİR AYNI olmalıdır.
-// ============================================================
-
-/** Ürün bilgisi (Menü kalemi) */
 // [AI-Agent: Skills] Ortak tip tanımları — ROADMAP.md, stockpilot-ai-context ve coding-standards skill'lerine uygun.
-// Sorumlu: Emre
+// Sorumlu: Emre + Samet (merge conflict sonrası birleştirildi ve uyumlu hale getirildi)
 // Bu dosya frontend ve backend'de BİREBİR AYNI olmalıdır.
 // Son Güncelleme: 2026-05-06
 
-// ─── Temel Veri Modelleri ────────────────────────────────────
+// ═══════════════════════════════════════════════════════
+// Temel Veri Modelleri
+// ═══════════════════════════════════════════════════════
 
 /** Ürün (Kafe menü ürünü) */
 export interface Urun {
@@ -22,23 +15,13 @@ export interface Urun {
   category: string;
 }
 
-/** Ham madde / Malzeme bilgisi */
-export interface Malzeme {
-  id: number;
-  name: string;
-  unit: string;       // 'kg', 'lt', 'adet' vb.
-  unitCost: number;   // Birim maliyet (TL)
-  minStockLevel: number; // Kritik stok eşiği
-}
-
-/** Reçete kalemi — bir ürünün hangi malzemeden ne kadar kullandığı */
 /** Malzeme (Ham madde / Envanter kalemi) */
 export interface Malzeme {
   id: number;
   name: string;
   unit: string;        // kg, lt, adet, gr
-  unitCost: number;
-  minStockLevel: number;
+  unitCost: number;    // Birim maliyet (TL)
+  minStockLevel: number; // Kritik stok eşiği
 }
 
 /** Reçete Kalemi (Ürün-Malzeme ilişkisi) */
@@ -46,17 +29,6 @@ export interface ReceteKalemi {
   id: number;
   productId: number;
   ingredientId: number;
-  quantityPerUnit: number; // Bir ürün başına kullanılan miktar (gram, ml, adet)
-}
-
-/** Anlık stok durumu */
-export interface StokKalemi {
-  id: number;
-  ingredientId: number;
-  currentStock: number; // Mevcut stok miktarı
-}
-
-/** Günlük satış kaydı */
   quantityPerUnit: number;  // 1 ürün için gerekli miktar
 }
 
@@ -73,18 +45,12 @@ export interface GunlukSatis {
   id: number;
   productId: number;
   quantity: number;
-  saleDate: string; // 'YYYY-MM-DD' formatında
-}
-
-// ============================================================
-// ERP Motoru Çıktı Tipleri
-// ============================================================
-
-/** Ürün bazlı satış özeti */
   saleDate: string;   // YYYY-MM-DD
 }
 
-// ─── ERP Motoru Arayüzleri ──────────────────────────────────
+// ═══════════════════════════════════════════════════════
+// ERP Motoru Arayüzleri
+// ═══════════════════════════════════════════════════════
 
 /** databaseService.getErpVerileri() çıktısı — ERP motoruna girdi */
 export interface ErpGirdiVerileri {
@@ -100,10 +66,6 @@ export interface UrunSatisOzeti {
   productId: number;
   productName: string;
   quantity: number;
-  revenue: number; // adet × birim fiyat
-}
-
-/** Malzeme bazlı teorik tüketim */
   revenue: number;
 }
 
@@ -112,37 +74,24 @@ export interface TeorikTuketim {
   ingredientId: number;
   ingredientName: string;
   unit: string;
-  theoreticalUsage: number;  // Reçeteye göre kullanılması gereken miktar
-  currentStock: number;      // Mevcut stok
-  remainingStock: number;    // currentStock - theoreticalUsage
+  theoreticalUsage: number;   // Reçeteye göre kullanılması gereken miktar
+  currentStock: number;
+  remainingStock: number;
 }
 
-/** Kritik stok durumu — trafik ışığı sistemi */
+/** Kritik stok seviyesi — trafik ışığı sistemi */
 export type StokSeviyesi = 'Kırmızı' | 'Sarı' | 'Yeşil';
-
-export interface KritikStok {
-  ingredientId: number;
-  ingredientName: string;
-  unit: string;
-  currentStock: number;
-  theoreticalUsage: number;
-  remainingStock: number;
-  minStockLevel: number;
-  level: StokSeviyesi;     // 'Kırmızı' = bitmiş/acil, 'Sarı' = azalıyor
-  message: string;         // Türkçe uyarı mesajı
-  theoreticalConsumption: number;
-  currentStock: number;
-  remainingStock: number;
-}
 
 /** Kritik stok uyarısı */
 export interface KritikStok {
   ingredientId: number;
   ingredientName: string;
   currentStock: number;
+  theoreticalUsage: number;
+  remainingStock: number;
   minStockLevel: number;
   unit: string;
-  severity: 'red' | 'yellow';  // Trafik ışığı: kırmızı = acil, sarı = dikkat
+  level: StokSeviyesi;        // 'Kırmızı' = acil, 'Sarı' = dikkat
   message: string;
 }
 
@@ -152,42 +101,22 @@ export interface SatinAlmaOnerisi {
   ingredientName: string;
   unit: string;
   currentStock: number;
-  requiredAmount: number;    // Eksik miktar
-  suggestedOrder: number;    // Önerilen sipariş (eksik + güvenlik payı)
-  estimatedCost: number;     // Tahmini maliyet (TL)
-  priority: StokSeviyesi;    // 'Kırmızı' = acil, 'Sarı' = yakında gerekli
+  requiredAmount: number;      // Eksik miktar
+  suggestedOrder: number;      // Önerilen sipariş (eksik + güvenlik payı)
+  estimatedCost: number;       // Tahmini maliyet (TL)
+  priority?: StokSeviyesi;     // 'Kırmızı' = acil, 'Sarı' = yakında gerekli
 }
 
-/** Reçete sapması (opsiyonel — fiziksel stok sayımı girilmişse) */
+/** Reçete sapması (fiziksel stok karşılaştırması) */
 export interface ReceteSapmasi {
   ingredientId: number;
   ingredientName: string;
   unit: string;
-  theoreticalRemaining: number; // Teorik kalan stok
-  actualRemaining: number;      // Fiziksel sayım sonucu
-  deviation: number;            // Fark (fire/kayıp)
-  deviationPercent: number;     // Yüzde sapma
-  estimatedLoss: number;        // Tahmini kayıp (TL)
-}
-
-/** ERP Hesap Motoru Ana Çıktısı */
-  currentStock: number;
-  suggestedAmount: number;
-  unit: string;
-  estimatedCost: number;
-  urgency: 'high' | 'medium' | 'low';
-}
-
-/** Reçete sapması (opsiyonel fiziksel stok karşılaştırması) */
-export interface ReceteSapmasi {
-  ingredientId: number;
-  ingredientName: string;
-  theoreticalConsumption: number;
-  actualConsumption: number;
-  deviation: number;
-  deviationPercent: number;
-  unit: string;
-  lostCost: number;
+  theoreticalRemaining: number;  // Teorik kalan stok
+  actualRemaining: number;       // Fiziksel sayım sonucu
+  deviation: number;             // Fark (fire/kayıp)
+  deviationPercent: number;      // Yüzde sapma
+  estimatedLoss: number;         // Tahmini kayıp (TL)
 }
 
 /** Tam analiz sonucu (ERP motoru çıktısı) */
@@ -200,26 +129,31 @@ export interface AnalizSonucu {
   satinAlmaOnerisi: SatinAlmaOnerisi[];
   receteSapmasi?: ReceteSapmasi[];
   tedarikciMesajTaslagi: string;
-  analizTarihi: string;          // ISO date
-  pisinmeSuresi: number;         // Hesaplama süresi (ms)
-}
-
-// ============================================================
-// API Response Formatı
-// ============================================================
-
-/** Standart başarılı API yanıtı */
-export interface ApiResponse<T> {
   yoneticiyeOzet?: string;        // Gemma tarafından oluşturulan özet
   analizTarihi?: string;          // ISO tarih
+  pisinmeSuresi?: number;         // Hesaplama süresi (ms)
 }
 
-// ─── Copilot Arayüzleri (Aşama 4 hazırlık) ─────────────────
+// ═══════════════════════════════════════════════════════
+// Gemma / Copilot Tipleri
+// ═══════════════════════════════════════════════════════
+
+/** Gemma servisine gönderilen istek */
+export interface GemmaRequest {
+  prompt: string;
+  context?: string;
+}
+
+/** Gemma servisinden gelen yanıt */
+export interface GemmaResponse {
+  text: string;
+  isFromFallback: boolean;
+}
 
 /** Copilot soru isteği */
 export interface CopilotRequest {
   question: string;
-  type: 'quick' | 'free';   // Hazır soru butonu veya serbest soru
+  type: 'quick' | 'free';
 }
 
 /** Copilot mesaj tipi (chat geçmişi) */
@@ -227,17 +161,31 @@ export interface CopilotMessage {
   id: string;
   role: 'user' | 'assistant';
   content: string;
-  timestamp: string;         // ISO tarih
+  timestamp: string;
 }
 
 /** Copilot yanıt */
 export interface CopilotResponse {
   answer: string;
-  source: 'gemma' | 'fallback';  // AI mı yoksa fallback mı cevapladı
-  basedOnAnalysis: boolean;       // Son analiz verisine dayalı mı
+  source: 'gemma' | 'fallback';
+  basedOnAnalysis: boolean;
 }
 
-// ─── n8n Webhook Arayüzü (Aşama 5 — Opsiyonel) ─────────────
+/** Copilot soru-cevap (alternatif arayüz) */
+export interface CopilotSoru {
+  question: string;
+  analysisContext?: AnalizSonucu;
+}
+
+export interface CopilotCevap {
+  answer: string;
+  isFromFallback: boolean;
+  timestamp: string;
+}
+
+// ═══════════════════════════════════════════════════════
+// n8n Webhook Arayüzü (Opsiyonel)
+// ═══════════════════════════════════════════════════════
 
 /** n8n tedarikçi mesaj isteği */
 export interface N8nSupplierPayload {
@@ -250,7 +198,9 @@ export interface N8nSupplierPayload {
   }>;
 }
 
-// ─── Dashboard Özet Tipi ────────────────────────────────────
+// ═══════════════════════════════════════════════════════
+// Dashboard Özet Tipi
+// ═══════════════════════════════════════════════════════
 
 /** Dashboard'da gösterilecek özet kartlar için tip */
 export interface DashboardOzet {
@@ -262,7 +212,9 @@ export interface DashboardOzet {
   sonAnalizTarihi: string | null;
 }
 
-// ─── API Response Formatı ───────────────────────────────────
+// ═══════════════════════════════════════════════════════
+// API Response Formatı
+// ═══════════════════════════════════════════════════════
 
 /** Standart API başarılı yanıt */
 export interface ApiSuccessResponse<T = unknown> {
@@ -270,7 +222,6 @@ export interface ApiSuccessResponse<T = unknown> {
   data: T;
 }
 
-/** Standart hata API yanıtı */
 /** Standart API hata yanıtı */
 export interface ApiErrorResponse {
   success: false;
@@ -278,36 +229,12 @@ export interface ApiErrorResponse {
   details?: Array<{ field: string; message: string }>;
 }
 
-// ============================================================
-// Gemma / Copilot Tipleri
-// ============================================================
-
-/** Gemma servisine gönderilen istek */
-export interface GemmaRequest {
-  prompt: string;
-  context?: string;
-}
-
-/** Gemma servisinden gelen yanıt */
-export interface GemmaResponse {
-  text: string;
-  isFromFallback: boolean; // Fallback mekanizması mı kullanıldı?
-}
-
-/** Copilot soru-cevap */
-export interface CopilotSoru {
-  question: string;
-  analysisContext?: AnalizSonucu;
-}
-
-export interface CopilotCevap {
-  answer: string;
-  isFromFallback: boolean;
-  timestamp: string;
 /** Birleşik API yanıt tipi */
 export type ApiResponse<T = unknown> = ApiSuccessResponse<T> | ApiErrorResponse;
 
-// ─── DB Row Tipleri (snake_case — PostgreSQL'den gelen ham veri) ─
+// ═══════════════════════════════════════════════════════
+// DB Row Tipleri (snake_case — PostgreSQL'den gelen ham veri)
+// ═══════════════════════════════════════════════════════
 
 export interface ProductRow {
   id: number;
@@ -337,7 +264,7 @@ export interface InventoryRow {
   id: number;
   ingredient_id: number;
   current_stock: string;
-  physical_stock: string | null;  // Fiziksel sayım (reçete sapması için, opsiyonel)
+  physical_stock: string | null;
   updated_at: Date;
 }
 

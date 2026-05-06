@@ -16,8 +16,8 @@ import dotenv from 'dotenv';
 // 3. Proje dosyaları
 import pool from './db/pool';
 
-// .env dosyasını yükle
-dotenv.config();
+// .env dosyasını yükle (Global .env root klasöründe)
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 // ─── Sabitler ────────────────────────────────────────────────
 const PORT = Number(process.env.PORT) || 3001;
