@@ -21,7 +21,7 @@ async function runSeed(): Promise<void> {
     await client.query(seedSQL);
     await client.query('COMMIT');
     console.log('✅ Seed verisi başarıyla yüklendi!');
-    console.log('🌱 Demo verisi yüklendi: 6 ürün, 10 malzeme, reçeteler, stoklar ve satışlar');
+    console.log('🌱 Demo verisi yüklendi: 6 ürün, 10 malzeme, reçeteler, stoklar, fiziksel sayım ve satışlar');
   } catch (err) {
     await client.query('ROLLBACK');
     console.error('❌ Seed verisi yüklenirken hata:', err);
