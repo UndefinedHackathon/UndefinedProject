@@ -15,6 +15,7 @@ import dotenv from 'dotenv';
 
 // 3. Proje dosyaları
 import pool from './db/pool';
+import analyzeRouter from './routes/analyze.route';
 
 // .env dosyasını yükle (Global .env root klasöründe)
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
@@ -74,8 +75,8 @@ app.get('/api/health', async (_req, res) => {
 // app.use('/api/recipes',    recipesRouter);
 // app.use('/api/sales',      salesRouter);
 
-// Aşama 3'te Samet tarafından eklenecek:
-// app.use('/api/analyze',    analyzeRouter);
+// Aşama 3 — Samet: Analyze route aktif
+app.use('/api/analyze', analyzeRouter);
 
 // Aşama 4'te Samet tarafından eklenecek:
 // app.use('/api/copilot',    copilotRouter);

@@ -79,7 +79,7 @@ COMMENT ON TABLE daily_sales IS 'Günlük satış kayıtları — ürün bazınd
 -- result_data JSONB: AnalizSonucu tipindeki tüm hesaplamalar
 CREATE TABLE analysis_results (
   id          SERIAL PRIMARY KEY,
-  date        DATE NOT NULL,
+  date        DATE NOT NULL UNIQUE,
   result_data JSONB NOT NULL,                          -- Tam analiz sonucu (AnalizSonucu)
   ai_summary  TEXT,                                    -- Gemma tarafından oluşturulan yönetici özeti
   created_at  TIMESTAMPTZ DEFAULT NOW()
