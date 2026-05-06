@@ -145,14 +145,14 @@ UndefinedProject/
 - [ ] Tüm formları Zustand store üzerinden backend API'ye bağla
 
 #### 🟠 Samet — ERP Motoru Geliştirme
-- [ ] `hesaplaGunlukAnaliz()` fonksiyonunu tamamla:
-  - [ ] Toplam satış adedi ve gelir hesaplama
-  - [ ] Ürün satış özeti
-  - [ ] Teorik malzeme tüketimi (reçetelere göre)
-  - [ ] Kritik stok tespiti (Kırmızı/Sarı trafik ışığı)
-  - [ ] Satın alma önerisi
-  - [ ] Reçete sapması (opsiyonel fiziksel stok)
-  - [ ] Tedarikçi mesaj taslağı
+- [x] `hesaplaGunlukAnaliz()` fonksiyonunu tamamla:
+  - [x] Toplam satış adedi ve gelir hesaplama
+  - [x] Ürün satış özeti
+  - [x] Teorik malzeme tüketimi (reçetelere göre)
+  - [x] Kritik stok tespiti (Kırmızı/Sarı trafik ışığı)
+  - [x] Satın alma önerisi
+  - [x] Reçete sapması (opsiyonel fiziksel stok)
+  - [x] Tedarikçi mesaj taslağı
 
 ---
 
@@ -174,12 +174,12 @@ UndefinedProject/
 - [ ] Loading state ve hata gösterimi
 
 #### 🟠 Samet — Analyze Route
-- [ ] `analyze.route.ts` — POST /api/analyze endpoint'i
-  - [ ] databaseService.getErpVerileri() çağır
-  - [ ] erpHesapMotoru.hesaplaGunlukAnaliz() çalıştır
-  - [ ] Sonucu analysis_results tablosuna kaydet
-  - [ ] Gemma ile yönetici özeti oluştur (fallback dahil)
-  - [ ] Response olarak AnalizSonucu döndür
+- [x] `analyze.route.ts` — POST /api/analyze endpoint'i
+  - [x] databaseService.getErpVerileri() çağır
+  - [x] erpHesapMotoru.hesaplaGunlukAnaliz() çalıştır
+  - [x] Sonucu analysis_results tablosuna kaydet
+  - [x] Gemma ile yönetici özeti oluştur (fallback dahil)
+  - [x] Response olarak AnalizSonucu döndür
 
 ---
 
