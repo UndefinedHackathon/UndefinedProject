@@ -135,6 +135,20 @@ export default function LoginPage() {
                   Kayıt Ol
                 </Link>
               </p>
+
+              {/* Demo Admin bypass — hackathon sunumu için */}
+              <div className="w-full border-t pt-3">
+                <button
+                  type="button"
+                  className="w-full text-sm text-muted-foreground hover:text-primary transition-colors underline underline-offset-4"
+                  onClick={() => {
+                    localStorage.setItem('demo_mode', 'true');
+                    navigate('/');
+                  }}
+                >
+                  🔓 Demo Admin olarak devam et
+                </button>
+              </div>
             </CardFooter>
           </form>
         </Card>
