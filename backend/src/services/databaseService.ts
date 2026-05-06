@@ -96,7 +96,9 @@ export function mapSales(rows: DailySaleRow[]): GunlukSatis[] {
     id: row.id,
     productId: row.product_id,
     quantity: row.quantity,
-    saleDate: row.sale_date,
+    saleDate: typeof row.sale_date === 'string'
+      ? row.sale_date
+      : new Date(row.sale_date).toISOString().split('T')[0],
   }));
 }
 
@@ -236,6 +238,33 @@ export async function sonAnaliziGetir(tarih?: string): Promise<{ sonuc: AnalizSo
     aiOzet: row.ai_summary,
     tarih: row.date,
   };
+}
+
+// [AI-Agent: Skills] Son analiz helper — copilotService ve analyze.route için merkezi tek kaynak.
+// database-service-layer ve coding-standards skill'lerine uygun.
+/**
+ * Son analiz sonucunu doğrudan AnalizSonucu olarak döner.
+ * Copilot context'i ve Dashboard /api/analyze/latest endpoint'i için kolaylık fonksiyonu.
+ * yoneticiyeOzet alanı AI summary ile doldurulur.
+ *
+ * @param tarih - Opsiyonel tarih filtresi (YYYY-MM-DD). Verilmezse en son analiz döner.
+ * @returns AnalizSonucu veya null (henüz analiz yapılmamışsa).
+ */
+export async function getLastAnalysis(tarih?: string): Promise<AnalizSonucu | null> {
+  try {
+    const veri = await sonAnaliziGetir(tarih);
+    if (!veri) return null;
+
+    // yoneticiyeOzet'i analiz objesine merge et
+    return {
+      ...veri.sonuc,
+      yoneticiyeOzet: veri.aiOzet || undefined,
+      analizTarihi: veri.tarih,
+    };
+  } catch (err) {
+    console.error('❌ Son analiz çekme hatası:', err);
+    return null;
+  }
 }
 
 // ═══════════════════════════════════════════════════════
