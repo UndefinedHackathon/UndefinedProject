@@ -8,7 +8,7 @@ import { z } from 'zod';
 
 // 2. Proje dosyaları
 import { query, getClient } from '../db/pool';
-import { CreateRecipeSchema, CreateBulkRecipeSchema, IdParamSchema } from '../schemas/recipe.schema';
+import { CreateRecipeSchema, CreateBulkRecipeSchema, CreateMultiProductRecipeSchema, IdParamSchema } from '../schemas/recipe.schema';
 import type { RecipeItemRow } from '../types/stockpilot.types';
 
 const router = Router();
@@ -67,15 +67,49 @@ router.get('/', async (req: Request, res: Response) => {
 // ─── POST /api/recipes ──────────────────────────────────────
 /**
  * Yeni reçete kalemi ekler.
- * İki mod destekler:
- * 1. Tekli: { product_id, ingredient_id, quantity_per_unit }
- * 2. Toplu: { product_id, items: [{ ingredient_id, quantity_per_unit }, ...] }
+ * Üç mod destekler:
+ * 1. Çoklu ürün: { product_ids: [...], ingredient_id, quantity_per_unit }
+ * 2. Toplu malzeme: { product_id, items: [{ ingredient_id, quantity_per_unit }, ...] }
+ * 3. Tekli: { product_id, ingredient_id, quantity_per_unit }
  */
+// [AI-Agent: Skills] Çoklu ürün reçete desteği — product-recipe-management skill'ine uygun.
 router.post('/', async (req: Request, res: Response) => {
   try {
-    // Toplu ekleme mi kontrol et
-    if (req.body.items && Array.isArray(req.body.items)) {
-      // ─── Toplu Reçete Ekleme ────────────────────────────
+    // ─── Mod 1: Çoklu Ürün Ekleme (product_ids) ────────────
+    if (req.body.product_ids && Array.isArray(req.body.product_ids)) {
+      const validated = CreateMultiProductRecipeSchema.parse(req.body);
+
+      const client = await getClient();
+      try {
+        await client.query('BEGIN');
+
+        const insertedRows: RecipeItemRow[] = [];
+
+        for (const pid of validated.product_ids) {
+          const result = await client.query<RecipeItemRow>(
+            `INSERT INTO recipe_items (product_id, ingredient_id, quantity_per_unit)
+             VALUES ($1, $2, $3)
+             ON CONFLICT (product_id, ingredient_id)
+             DO UPDATE SET quantity_per_unit = EXCLUDED.quantity_per_unit
+             RETURNING *`,
+            [pid, validated.ingredient_id, validated.quantity_per_unit]
+          );
+          insertedRows.push(result.rows[0]);
+        }
+
+        await client.query('COMMIT');
+
+        console.log(`✅ ${insertedRows.length} ürüne reçete kalemi eklendi (malzeme id: ${validated.ingredient_id})`);
+        res.status(201).json({ success: true, data: insertedRows });
+      } catch (innerErr) {
+        await client.query('ROLLBACK');
+        throw innerErr;
+      } finally {
+        client.release();
+      }
+    }
+    // ─── Mod 2: Toplu Malzeme Ekleme (items array) ────────────
+    else if (req.body.items && Array.isArray(req.body.items)) {
       const validated = CreateBulkRecipeSchema.parse(req.body);
 
       const client = await getClient();
@@ -106,8 +140,9 @@ router.post('/', async (req: Request, res: Response) => {
       } finally {
         client.release();
       }
-    } else {
-      // ─── Tekli Reçete Ekleme ────────────────────────────
+    }
+    // ─── Mod 3: Tekli Reçete Ekleme ────────────────────────
+    else {
       const validated = CreateRecipeSchema.parse(req.body);
 
       const result = await query<RecipeItemRow>(

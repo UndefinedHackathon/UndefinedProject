@@ -16,20 +16,49 @@ const router = Router();
 // ─── GET /api/products ──────────────────────────────────────
 /**
  * Tüm ürünleri listeler.
- * Reçete kalemi sayısı ile birlikte döner.
+ * Her ürün, ilişkili reçete kalemleri (recipe) ile birlikte döner.
+ * RecipeTable bileşeni product.recipe dizisini kullanır.
  */
 router.get('/', async (_req: Request, res: Response) => {
   try {
-    const result = await query<ProductRow & { recipe_count: string }>(
-      `SELECT p.*, COUNT(ri.id)::text AS recipe_count
-       FROM products p
-       LEFT JOIN recipe_items ri ON p.id = ri.product_id
-       GROUP BY p.id
-       ORDER BY p.name ASC`
+    // 1. Tüm ürünleri çek
+    const productsResult = await query<ProductRow>(
+      'SELECT * FROM products ORDER BY name ASC'
     );
 
-    console.log(`📦 ${result.rows.length} ürün listelendi`);
-    res.json({ success: true, data: result.rows });
+    // 2. Tüm reçete kalemlerini malzeme bilgisiyle birlikte çek
+    const recipesResult = await query<{
+      id: number;
+      product_id: number;
+      ingredient_id: number;
+      quantity_per_unit: string;
+      ingredient_name: string;
+      unit: string;
+      unit_cost: string;
+    }>(
+      `SELECT ri.id, ri.product_id, ri.ingredient_id, ri.quantity_per_unit,
+              i.name AS ingredient_name, i.unit, i.unit_cost
+       FROM recipe_items ri
+       JOIN ingredients i ON ri.ingredient_id = i.id
+       ORDER BY ri.product_id, i.name`
+    );
+
+    // 3. Reçeteleri ürün bazında grupla ve ürün objesine ekle
+    // [AI-Agent: Skills] Ürün + reçete nested yapısı — product-recipe-management skill'ine uygun.
+    const recipeMap = new Map<number, typeof recipesResult.rows>();
+    for (const r of recipesResult.rows) {
+      const list = recipeMap.get(r.product_id) || [];
+      list.push(r);
+      recipeMap.set(r.product_id, list);
+    }
+
+    const productsWithRecipe = productsResult.rows.map((p) => ({
+      ...p,
+      recipe: recipeMap.get(p.id) || [],
+    }));
+
+    console.log(`📦 ${productsWithRecipe.length} ürün listelendi (reçete dahil)`);
+    res.json({ success: true, data: productsWithRecipe });
   } catch (err) {
     console.error('❌ Ürün listeleme hatası:', err);
     res.status(500).json({ success: false, error: 'Ürünler yüklenirken hata oluştu' });

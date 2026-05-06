@@ -1,6 +1,7 @@
-// [AI-Agent: Skills] StockPilot AI Zustand store — Slice pattern ile global state yönetimi
+// [AI-Agent: Skills] StockPilot AI Zustand store — Backend API ile entegre, AnalizSonucu tipi ile senkronize
 import { create } from 'zustand';
 import api from '@/lib/api';
+import type { AnalizSonucu } from '@/types/stockpilot.types';
 
 // ─── Yardımcı Tipler ─────────────────────────────
 interface UserInfo {
@@ -21,34 +22,13 @@ interface CopilotMessage {
   timestamp: number;
 }
 
-interface DashboardSummary {
-  totalProducts: number;
-  totalIngredients: number;
-  totalSales: number;
-  totalRevenue: number;
-  criticalStockItems: number;
-  date: string;
-}
-
-interface AnalysisResult {
-  date: string;
-  theoreticalConsumption: Record<string, number>;
-  criticalStockAlerts: string[];
-  purchaseSuggestions: string[];
-  summary: string;
-}
-
 // ─── Slice Tanımları ─────────────────────────────
-interface DashboardSlice {
-  summary: DashboardSummary | null;
-  isLoadingDashboard: boolean;
-  fetchDashboard: (date?: string) => Promise<void>;
-}
-
 interface AnalysisSlice {
-  result: AnalysisResult | null;
+  analysisResult: AnalizSonucu | null;
   isAnalyzing: boolean;
+  isLoadingAnalysis: boolean;
   runAnalysis: (date?: string) => Promise<void>;
+  fetchLatestAnalysis: () => Promise<void>;
 }
 
 interface CopilotSlice {
@@ -76,39 +56,38 @@ interface UISlice {
 }
 
 // ─── Birleşik Store ──────────────────────────────
-type StockPilotStore = DashboardSlice & AnalysisSlice & CopilotSlice & AuthSlice & UISlice;
+type StockPilotStore = AnalysisSlice & CopilotSlice & AuthSlice & UISlice;
 
 export const useStore = create<StockPilotStore>((set, get) => ({
-  // ─── Dashboard ───────────────────────────────
-  summary: null,
-  isLoadingDashboard: false,
-  fetchDashboard: async (date) => {
-    set({ isLoadingDashboard: true });
-    try {
-      const today = date || new Date().toISOString().split('T')[0];
-      const res = await api.get(`/dashboard?date=${today}`);
-      set({ summary: res.data.data, isLoadingDashboard: false });
-    } catch {
-      set({ isLoadingDashboard: false });
-      get().addToast({ type: 'error', message: 'Dashboard verisi alınamadı' });
-    }
-  },
-
-  // ─── Analysis ────────────────────────────────
-  result: null,
+  // ─── Analysis (Dashboard + Analyze) ──────────
+  analysisResult: null,
   isAnalyzing: false,
+  isLoadingAnalysis: false,
+
+  /** POST /api/analyze — yeni analiz çalıştır */
   runAnalysis: async (date) => {
     set({ isAnalyzing: true });
     try {
       const today = date || new Date().toISOString().split('T')[0];
       const res = await api.post('/analyze', { date: today });
-      set({ result: res.data.data, isAnalyzing: false });
+      set({ analysisResult: res.data.data as AnalizSonucu, isAnalyzing: false });
       get().addToast({ type: 'success', message: 'Analiz tamamlandı ✅' });
-      // Analiz sonrası dashboard'u da güncelle
-      get().fetchDashboard(today);
     } catch {
       set({ isAnalyzing: false });
       get().addToast({ type: 'error', message: 'Analiz başarısız oldu' });
+    }
+  },
+
+  /** GET /api/analyze/latest — son analiz sonucunu çek */
+  fetchLatestAnalysis: async () => {
+    set({ isLoadingAnalysis: true });
+    try {
+      const res = await api.get('/analyze/latest');
+      const data = res.data.data;
+      set({ analysisResult: data as AnalizSonucu | null, isLoadingAnalysis: false });
+    } catch {
+      set({ isLoadingAnalysis: false });
+      // İlk açılışta analiz yoksa hata gösterme
     }
   },
 
@@ -119,11 +98,11 @@ export const useStore = create<StockPilotStore>((set, get) => ({
     const userMsg: CopilotMessage = { role: 'user', content: question, timestamp: Date.now() };
     set((s) => ({ messages: [...s.messages, userMsg], isThinking: true }));
     try {
-      const res = await api.post('/copilot', { question });
+      const res = await api.post('/copilot', { question, type: 'free' });
       const aiMsg: CopilotMessage = { role: 'ai', content: res.data.data.answer, timestamp: Date.now() };
       set((s) => ({ messages: [...s.messages, aiMsg], isThinking: false }));
     } catch {
-      const errMsg: CopilotMessage = { role: 'ai', content: 'Şu an yanıt veremiyorum. Dashboard\'dan inceleyin.', timestamp: Date.now() };
+      const errMsg: CopilotMessage = { role: 'ai', content: 'Şu an yanıt veremiyorum. Lütfen daha sonra tekrar deneyin.', timestamp: Date.now() };
       set((s) => ({ messages: [...s.messages, errMsg], isThinking: false }));
     }
   },

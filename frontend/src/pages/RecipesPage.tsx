@@ -19,7 +19,7 @@ export default function RecipesPage() {
     try {
       const [prodRes, ingRes] = await Promise.all([
         api.get('/products'),
-        api.get('/ingredients'),
+        api.get('/materials'),
       ]);
       setProducts(prodRes.data.data ?? []);
       setIngredients(ingRes.data.data ?? []);

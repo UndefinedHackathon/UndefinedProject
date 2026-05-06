@@ -6,15 +6,33 @@ import dotenv from 'dotenv';
 import path from 'path';
 
 // Global .env root klasöründe
-dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
+const envPath = path.resolve(__dirname, '../../../.env');
+dotenv.config({ path: envPath });
+
+// Fallback: Eğer dotenv .env'yi bulamadıysa, override ile tekrar dene
+if (!process.env.DATABASE_URL) {
+  dotenv.config({ path: path.resolve(__dirname, '../../../.env'), override: true });
+}
+
+console.log(`🔧 Pool .env path: ${envPath}`);
+console.log(`🔧 DATABASE_URL: ${process.env.DATABASE_URL ? '✅ yüklendi' : '❌ bulunamadı'}`);
 
 /**
  * PostgreSQL bağlantı havuzu.
  * DATABASE_URL ortam değişkeninden bağlantı bilgilerini alır.
+ * Fallback: Ayrı DB_* env değişkenlerini kullanır.
  */
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+const pool = new Pool(
+  process.env.DATABASE_URL
+    ? { connectionString: process.env.DATABASE_URL }
+    : {
+        host: process.env.DB_HOST || 'localhost',
+        port: Number(process.env.DB_PORT) || 5432,
+        database: process.env.DB_NAME || 'stockpilot',
+        user: process.env.DB_USER || 'postgres',
+        password: process.env.DB_PASSWORD || 'postgres',
+      }
+);
 
 // Bağlantı testi
 pool.on('connect', () => {

@@ -145,14 +145,14 @@ UndefinedProject/
 - [ ] Tüm formları Zustand store üzerinden backend API'ye bağla
 
 #### 🟠 Samet — ERP Motoru Geliştirme
-- [ ] `hesaplaGunlukAnaliz()` fonksiyonunu tamamla:
-  - [ ] Toplam satış adedi ve gelir hesaplama
-  - [ ] Ürün satış özeti
-  - [ ] Teorik malzeme tüketimi (reçetelere göre)
-  - [ ] Kritik stok tespiti (Kırmızı/Sarı trafik ışığı)
-  - [ ] Satın alma önerisi
-  - [ ] Reçete sapması (opsiyonel fiziksel stok)
-  - [ ] Tedarikçi mesaj taslağı
+- [x] `hesaplaGunlukAnaliz()` fonksiyonunu tamamla:
+  - [x] Toplam satış adedi ve gelir hesaplama
+  - [x] Ürün satış özeti
+  - [x] Teorik malzeme tüketimi (reçetelere göre)
+  - [x] Kritik stok tespiti (Kırmızı/Sarı trafik ışığı)
+  - [x] Satın alma önerisi
+  - [x] Reçete sapması (opsiyonel fiziksel stok)
+  - [x] Tedarikçi mesaj taslağı
 
 ---
 
@@ -174,12 +174,12 @@ UndefinedProject/
 - [ ] Loading state ve hata gösterimi
 
 #### 🟠 Samet — Analyze Route
-- [ ] `analyze.route.ts` — POST /api/analyze endpoint'i
-  - [ ] databaseService.getErpVerileri() çağır
-  - [ ] erpHesapMotoru.hesaplaGunlukAnaliz() çalıştır
-  - [ ] Sonucu analysis_results tablosuna kaydet
-  - [ ] Gemma ile yönetici özeti oluştur (fallback dahil)
-  - [ ] Response olarak AnalizSonucu döndür
+- [x] `analyze.route.ts` — POST /api/analyze endpoint'i
+  - [x] databaseService.getErpVerileri() çağır
+  - [x] erpHesapMotoru.hesaplaGunlukAnaliz() çalıştır
+  - [x] Sonucu analysis_results tablosuna kaydet
+  - [x] Gemma ile yönetici özeti oluştur (fallback dahil)
+  - [x] Response olarak AnalizSonucu döndür
 
 ---
 
@@ -192,14 +192,14 @@ UndefinedProject/
 - [ ] Serbest soru input alanı
 - [ ] Loading (thinking) state animasyonu
 - [ ] Zustand store copilot slice'ı bağla
-
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 #### 🟠 Samet — Copilot Backend
-- [ ] `copilotService.ts` — system prompt + context hazırlama
-- [ ] `copilot.route.ts` — POST /api/copilot endpoint'i
-  - [ ] Son analysis_results'u context olarak al
-  - [ ] Gemma'ya gönder, cevap al
-  - [ ] Fallback cevap mekanizması
-- [ ] copilot.schema.ts — Zod validation
+- [x] `copilotService.ts` — system prompt + context hazırlama
+- [x] `copilot.route.ts` — POST /api/copilot endpoint'i
+  - [x] Son analysis_results'u context olarak al
+  - [x] Gemma'ya gönder, cevap al
+  - [x] Fallback cevap mekanizması
+- [x] copilot.schema.ts — Zod validation
 
 #### 🟢 Emre — Destek
 - [ ] analysis_results için helper query (son analiz çekme)
@@ -209,18 +209,18 @@ UndefinedProject/
 ### AŞAMA 5 — Auth & n8n Bonus & Polish (3:30–4:15)
 
 #### 🔵 Taha — Firebase Auth & n8n UI
-- [ ] LoginPage — email/password giriş formu
-- [ ] RegisterPage — kayıt formu
-- [ ] "Demo Admin olarak devam et" bypass butonu
-- [ ] AuthGuard komponenti
-- [ ] Axios interceptor'a token ekleme
-- [ ] n8n "Tedarikçiye Gönder" butonu (Dashboard'da)
-- [ ] Toast notification sistemi
+- [x] LoginPage — email/password giriş formu
+- [x] RegisterPage — kayıt formu
+- [x] "Demo Admin olarak devam et" bypass butonu
+- [x] AuthGuard komponenti
+- [x] Axios interceptor'a token ekleme
+- [x] n8n "Tedarikçiye Gönder" butonu (Dashboard'da)
+- [x] Toast notification sistemi
 
 #### 🟠 Samet — Auth Middleware & n8n Backend
-- [ ] `middleware/auth.ts` — Firebase token doğrulama + DEMO_MODE bypass
-- [ ] `n8n.route.ts` — POST /api/n8n/supplier-message (opsiyonel)
-- [ ] Gemma fallback cevaplarını son kez kontrol et
+- [x] `middleware/auth.ts` — Firebase token doğrulama + DEMO_MODE bypass
+- [x] `n8n.route.ts` — POST /api/n8n/supplier-message (opsiyonel)
+- [x] Gemma fallback cevaplarını son kez kontrol et
 
 #### 🟢 Emre — Son Kontroller
 - [ ] Seed data ile tam senaryo testi
