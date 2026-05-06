@@ -54,7 +54,7 @@ router.post('/', async (req: Request, res: Response) => {
       res.status(400).json({
         success: false,
         error: 'Geçersiz veri',
-        details: err.errors.map((e) => ({
+        details: err.issues.map((e: any) => ({
           field: e.path.join('.'),
           message: e.message,
         })),

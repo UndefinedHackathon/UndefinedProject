@@ -1,8 +1,4 @@
 {
-  "name": "backend",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
   "name": "stockpilot-backend",
   "version": "1.0.0",
   "description": "StockPilot AI — Backend API Server",

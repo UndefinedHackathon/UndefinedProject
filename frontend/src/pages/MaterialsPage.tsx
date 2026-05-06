@@ -16,7 +16,7 @@ export default function MaterialsPage() {
   const fetchMaterials = async () => {
     setLoading(true);
     try {
-      const res = await api.get('/ingredients');
+      const res = await api.get('/materials');
       setMaterials(res.data.data ?? []);
     } catch {
       // Backend henüz hazır değilse boş liste göster
@@ -37,7 +37,7 @@ export default function MaterialsPage() {
   const handleDelete = async (id: number) => {
     setDeleting(true);
     try {
-      await api.delete(`/ingredients/${id}`);
+      await api.delete(`/materials/${id}`);
       setMaterials((prev) => prev.filter((m) => m.id !== id));
     } catch {
       // Hata durumunda sessizce geç

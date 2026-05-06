@@ -1,9 +1,10 @@
-// [AI-Agent: Plan] Copilot sayfası iskeleti — AI soru-cevap paneli
+// [AI-Agent: Skills] Copilot sayfası — AI destekli soru-cevap paneli, backend POST /api/copilot ile entegre
+import CopilotPanel from '@/components/copilot/CopilotPanel';
+
 export default function CopilotPage() {
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold tracking-tight">Copilot</h1>
-      <p className="text-muted-foreground">AI destekli operasyon asistanı.</p>
+    <div className="max-w-4xl mx-auto">
+      <CopilotPanel />
     </div>
   );
 }

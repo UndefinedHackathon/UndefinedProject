@@ -1,10 +1,12 @@
 // [AI-Agent: Skills] Satışlar sayfası — Tarih seçimi, satış girişi, günlük özet
+// Backend /api/sales/today?date=YYYY-MM-DD endpoint'i ile entegre
 import { useState, useEffect } from 'react';
-import { Loader2, TrendingUp, RefreshCw, CalendarDays, Download } from 'lucide-react';
+import { Loader2, TrendingUp, RefreshCw, CalendarDays } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
+import SalesForm from '@/components/sales/SalesForm';
 import SalesTable from '@/components/sales/SalesTable';
 import api from '@/lib/api';
 import type { Product, DailySale } from '@/types/stockpilot.types';
@@ -20,18 +22,25 @@ export default function SalesPage() {
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
 
+  // Özet bilgisi (backend'den gelen)
+  const [summary, setSummary] = useState<{ totalItems: number; totalRevenue: number; uniqueProducts: number } | null>(null);
+
   const fetchData = async (date: string) => {
     setLoading(true);
     try {
       const [salesRes, prodRes] = await Promise.all([
-        api.get(`/sales?date=${date}`),
+        api.get(`/sales/today?date=${date}`),
         api.get('/products'),
       ]);
-      setSales(salesRes.data.data ?? []);
+      // Backend response: { success, data: { date, sales: [...], summary: {...} } }
+      const salesData = salesRes.data.data;
+      setSales(salesData.sales ?? []);
+      setSummary(salesData.summary ?? null);
       setProducts(prodRes.data.data ?? []);
     } catch {
       setSales([]);
       setProducts([]);
+      setSummary(null);
     } finally {
       setLoading(false);
     }
@@ -41,7 +50,10 @@ export default function SalesPage() {
     fetchData(selectedDate);
   }, [selectedDate]);
 
-
+  const handleAddSale = (_newSale: DailySale) => {
+    // Satış eklendikten sonra veriyi yenile (UPSERT olduğu için refetch gerekli)
+    fetchData(selectedDate);
+  };
 
   const handleDelete = async (id: number) => {
     setDeleting(true);
@@ -55,13 +67,13 @@ export default function SalesPage() {
     }
   };
 
-  // Özet hesapları
-  const totalQuantity = sales.reduce((sum, s) => sum + Number(s.quantity), 0);
-  const totalRevenue = sales.reduce((sum, s) => {
+  // Özet hesapları — backend'den gelen summary tercih edilir, yoksa client-side hesapla
+  const totalQuantity = summary?.totalItems ?? sales.reduce((sum, s) => sum + Number(s.quantity), 0);
+  const totalRevenue = summary?.totalRevenue ?? sales.reduce((sum, s) => {
     const prod = products.find((p) => p.id === s.product_id);
     return sum + (Number(s.quantity) * Number(prod?.price ?? 0));
   }, 0);
-  const uniqueProducts = new Set(sales.map((s) => s.product_id)).size;
+  const uniqueProducts = summary?.uniqueProducts ?? new Set(sales.map((s) => s.product_id)).size;
 
   return (
     <div className="space-y-6">
@@ -81,10 +93,11 @@ export default function SalesPage() {
             <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
             Yenile
           </Button>
-          <Button onClick={() => fetchData(selectedDate)} disabled={loading}>
-            <Download className="mr-2 h-4 w-4" />
-            Verileri Getir
-          </Button>
+          <SalesForm
+            products={products}
+            onSuccess={handleAddSale}
+            selectedDate={selectedDate}
+          />
         </div>
       </div>
 
@@ -119,7 +132,7 @@ export default function SalesPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Toplam Gelir</CardDescription>
-            <CardTitle className="text-2xl">₺{totalRevenue.toFixed(2)}</CardTitle>
+            <CardTitle className="text-2xl">₺{Number(totalRevenue).toFixed(2)}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
