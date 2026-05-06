@@ -209,13 +209,13 @@ UndefinedProject/
 ### AŞAMA 5 — Auth & n8n Bonus & Polish (3:30–4:15)
 
 #### 🔵 Taha — Firebase Auth & n8n UI
-- [ ] LoginPage — email/password giriş formu
-- [ ] RegisterPage — kayıt formu
-- [ ] "Demo Admin olarak devam et" bypass butonu
-- [ ] AuthGuard komponenti
-- [ ] Axios interceptor'a token ekleme
-- [ ] n8n "Tedarikçiye Gönder" butonu (Dashboard'da)
-- [ ] Toast notification sistemi
+- [x] LoginPage — email/password giriş formu
+- [x] RegisterPage — kayıt formu
+- [x] "Demo Admin olarak devam et" bypass butonu
+- [x] AuthGuard komponenti
+- [x] Axios interceptor'a token ekleme
+- [x] n8n "Tedarikçiye Gönder" butonu (Dashboard'da)
+- [x] Toast notification sistemi
 
 #### 🟠 Samet — Auth Middleware & n8n Backend
 - [x] `middleware/auth.ts` — Firebase token doğrulama + DEMO_MODE bypass
