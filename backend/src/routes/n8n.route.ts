@@ -32,7 +32,7 @@ router.post('/supplier-message', async (req: Request, res: Response) => {
     const data = SupplierMessageSchema.parse(req.body);
 
     console.log('🔄 n8n webhook tetikleniyor...');
-    
+
     // N8n sunucusuna POST isteği at
     await axios.post(N8N_WEBHOOK_URL, data, {
       timeout: 5000 // 5 saniye zaman aşımı
@@ -45,14 +45,15 @@ router.post('/supplier-message', async (req: Request, res: Response) => {
     });
   } catch (err: unknown) {
     if (err instanceof z.ZodError) {
+      const zodErr = err as any;
       res.status(400).json({
         success: false,
         error: 'Geçersiz veri',
-        details: err.errors.map((e) => ({ field: e.path.join('.'), message: e.message }))
+        details: zodErr.errors.map((e: any) => ({ field: e.path.join('.'), message: e.message }))
       });
       return;
     }
-    
+
     console.error('❌ n8n webhook hatası:', err instanceof Error ? err.message : 'Bilinmeyen hata');
     res.status(500).json({
       success: false,

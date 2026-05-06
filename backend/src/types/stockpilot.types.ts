@@ -67,6 +67,8 @@ export interface UrunSatisOzeti {
   productName: string;
   quantity: number;
   revenue: number;
+  cost: number;
+  profit: number;
 }
 
 /** Teorik malzeme tüketimi (ERP motoru çıktısı) */
@@ -123,6 +125,8 @@ export interface ReceteSapmasi {
 export interface AnalizSonucu {
   toplamSatisAdedi: number;
   toplamGelir: number;
+  toplamMaliyet: number;
+  toplamKar: number;
   urunSatisOzeti: UrunSatisOzeti[];
   teorikTuketim: TeorikTuketim[];
   kritikStoklar: KritikStok[];
