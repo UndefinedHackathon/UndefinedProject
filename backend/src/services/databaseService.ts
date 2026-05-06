@@ -28,13 +28,14 @@ import type {
 
 // ═══════════════════════════════════════════════════════
 // snake_case → camelCase Dönüşüm Fonksiyonları
+// (export: test ve doğrulama amaçlı dışa açık)
 // ═══════════════════════════════════════════════════════
 
 /**
  * ProductRow (DB) → Urun (ERP)
  * DECIMAL string → number dönüşümü yapılır.
  */
-function mapProducts(rows: ProductRow[]): Urun[] {
+export function mapProducts(rows: ProductRow[]): Urun[] {
   return rows.map((row) => ({
     id: row.id,
     name: row.name,
@@ -47,7 +48,7 @@ function mapProducts(rows: ProductRow[]): Urun[] {
  * IngredientRow (DB) → Malzeme (ERP)
  * DECIMAL string → number dönüşümü yapılır.
  */
-function mapIngredients(rows: IngredientRow[]): Malzeme[] {
+export function mapIngredients(rows: IngredientRow[]): Malzeme[] {
   return rows.map((row) => ({
     id: row.id,
     name: row.name,
@@ -61,7 +62,7 @@ function mapIngredients(rows: IngredientRow[]): Malzeme[] {
  * RecipeItemRow (DB) → ReceteKalemi (ERP)
  * snake_case → camelCase + DECIMAL string → number.
  */
-function mapRecipes(rows: RecipeItemRow[]): ReceteKalemi[] {
+export function mapRecipes(rows: RecipeItemRow[]): ReceteKalemi[] {
   return rows.map((row) => ({
     id: row.id,
     productId: row.product_id,
@@ -75,7 +76,7 @@ function mapRecipes(rows: RecipeItemRow[]): ReceteKalemi[] {
  * snake_case → camelCase + DECIMAL string → number.
  * physicalStock opsiyonel (reçete sapması hesabı için).
  */
-function mapInventory(rows: InventoryRow[]): StokKalemi[] {
+export function mapInventory(rows: InventoryRow[]): StokKalemi[] {
   return rows.map((row) => ({
     id: row.id,
     ingredientId: row.ingredient_id,
@@ -90,7 +91,7 @@ function mapInventory(rows: InventoryRow[]): StokKalemi[] {
  * DailySaleRow (DB) → GunlukSatis (ERP)
  * snake_case → camelCase.
  */
-function mapSales(rows: DailySaleRow[]): GunlukSatis[] {
+export function mapSales(rows: DailySaleRow[]): GunlukSatis[] {
   return rows.map((row) => ({
     id: row.id,
     productId: row.product_id,
@@ -235,4 +236,44 @@ export async function sonAnaliziGetir(tarih?: string): Promise<{ sonuc: AnalizSo
     aiOzet: row.ai_summary,
     tarih: row.date,
   };
+}
+
+// ═══════════════════════════════════════════════════════
+// ERP Motoru Entegrasyon Helper'ı
+// ═══════════════════════════════════════════════════════
+
+/**
+ * databaseService → ERP motoru → AnalizSonucu zincirini tek çağrıda çalıştırır.
+ * analyze.route.ts tarafından kullanılmak üzere tasarlandı.
+ *
+ * ERP motorunun hesaplaGunlukAnaliz() fonksiyonu spread parametreler alır,
+ * bu helper o dönüşümü yapar.
+ *
+ * @param tarih - Analiz tarihi (YYYY-MM-DD). Varsayılan: bugün.
+ * @returns AnalizSonucu — ERP motorunun ürettiği tam analiz sonucu.
+ */
+export async function runAnalizWithErp(tarih?: string): Promise<AnalizSonucu> {
+  // Lazy import — circular dependency önlemi
+  const { hesaplaGunlukAnaliz } = await import('./erpHesapMotoru.js');
+
+  // 1. Verileri çek ve camelCase'e dönüştür
+  const veriler = await getErpVerileri(tarih);
+
+  // 2. Fiziksel stok verilerini ayır (reçete sapması hesabı için)
+  const fizikselStoklar = veriler.stoklar.filter(
+    (s) => s.physicalStock !== undefined
+  );
+
+  // 3. ERP motorunu çalıştır (spread parametrelerle)
+  const sonuc = hesaplaGunlukAnaliz(
+    veriler.urunler,
+    veriler.malzemeler,
+    veriler.receteler,
+    veriler.stoklar,
+    veriler.gunlukSatislar,
+    fizikselStoklar.length > 0 ? fizikselStoklar : undefined
+  );
+
+  console.log(`🎯 Analiz tamamlandı — ${sonuc.toplamSatisAdedi} satış, ${sonuc.toplamGelir.toFixed(2)}₺ gelir, ${sonuc.kritikStoklar.length} kritik stok`);
+  return sonuc;
 }
