@@ -73,7 +73,7 @@ export default function RegisterPage() {
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold text-xl shadow-lg">
             SP
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">StockPilot AI</h1>
+          <h1 className="text-2xl font-bold tracking-tight">StockPilot</h1>
           <p className="text-sm text-muted-foreground">
             Yeni hesap oluşturun
           </p>
