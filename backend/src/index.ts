@@ -15,6 +15,8 @@ import dotenv from 'dotenv';
 
 // 3. Proje dosyaları
 import pool from './db/pool';
+import materialsRouter from './routes/materials.route';
+import productsRouter from './routes/products.route';
 
 // .env dosyasını yükle (Global .env root klasöründe)
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
@@ -68,19 +70,19 @@ app.get('/api/health', async (_req, res) => {
 });
 
 // ─── API Route'ları ─────────────────────────────────────────
-// Aşama 2'de Emre tarafından eklenecek CRUD route'ları:
-// app.use('/api/materials',  materialsRouter);
-// app.use('/api/products',   productsRouter);
-// app.use('/api/recipes',    recipesRouter);
-// app.use('/api/sales',      salesRouter);
+// Aşama 2 — CRUD route'ları (Emre)
+app.use('/api/materials',  materialsRouter);
+app.use('/api/products',   productsRouter);
+// app.use('/api/recipes',    recipesRouter);   // TODO: Aşama 2
+// app.use('/api/sales',      salesRouter);     // TODO: Aşama 2
 
-// Aşama 3'te Samet tarafından eklenecek:
+// Aşama 3 — Samet tarafından eklenecek:
 // app.use('/api/analyze',    analyzeRouter);
 
-// Aşama 4'te Samet tarafından eklenecek:
+// Aşama 4 — Samet tarafından eklenecek:
 // app.use('/api/copilot',    copilotRouter);
 
-// Aşama 5'te opsiyonel olarak eklenecek:
+// Aşama 5 — Opsiyonel:
 // app.use('/api/n8n',        n8nRouter);
 
 // ─── 404 Handler ────────────────────────────────────────────
