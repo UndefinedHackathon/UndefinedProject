@@ -1,5 +1,7 @@
-// [AI-Agent: Skills] Ortak tip tanımları — ROADMAP.md ve stockpilot-ai-context skill'ine uygun.
+// [AI-Agent: Skills] Ortak tip tanımları — ROADMAP.md, stockpilot-ai-context ve coding-standards skill'lerine uygun.
+// Sorumlu: Emre
 // Bu dosya frontend ve backend'de BİREBİR AYNI olmalıdır.
+// Son Güncelleme: 2026-05-06
 
 // ─── Temel Veri Modelleri ────────────────────────────────────
 
@@ -119,6 +121,54 @@ export interface AnalizSonucu {
   tedarikciMesajTaslagi: string;
   yoneticiyeOzet?: string;        // Gemma tarafından oluşturulan özet
   analizTarihi?: string;          // ISO tarih
+}
+
+// ─── Copilot Arayüzleri (Aşama 4 hazırlık) ─────────────────
+
+/** Copilot soru isteği */
+export interface CopilotRequest {
+  question: string;
+  type: 'quick' | 'free';   // Hazır soru butonu veya serbest soru
+}
+
+/** Copilot mesaj tipi (chat geçmişi) */
+export interface CopilotMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: string;         // ISO tarih
+}
+
+/** Copilot yanıt */
+export interface CopilotResponse {
+  answer: string;
+  source: 'gemma' | 'fallback';  // AI mı yoksa fallback mı cevapladı
+  basedOnAnalysis: boolean;       // Son analiz verisine dayalı mı
+}
+
+// ─── n8n Webhook Arayüzü (Aşama 5 — Opsiyonel) ─────────────
+
+/** n8n tedarikçi mesaj isteği */
+export interface N8nSupplierPayload {
+  supplierName: string;
+  message: string;
+  items: Array<{
+    ingredientName: string;
+    amount: number;
+    unit: string;
+  }>;
+}
+
+// ─── Dashboard Özet Tipi ────────────────────────────────────
+
+/** Dashboard'da gösterilecek özet kartlar için tip */
+export interface DashboardOzet {
+  toplamUrunSayisi: number;
+  toplamMalzemeSayisi: number;
+  bugunSatilanAdet: number;
+  bugunGelir: number;
+  kritikStokSayisi: number;
+  sonAnalizTarihi: string | null;
 }
 
 // ─── API Response Formatı ───────────────────────────────────
