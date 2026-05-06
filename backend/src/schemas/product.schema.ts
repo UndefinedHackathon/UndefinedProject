@@ -4,13 +4,20 @@
 import { z } from 'zod';
 
 /** Geçerli ürün kategorileri */
-const VALID_CATEGORIES = ['İçecek', 'Yiyecek', 'Tatlı', 'genel'] as const;
+const VALID_CATEGORIES = [
+  'Sıcak İçecek',
+  'Soğuk İçecek',
+  'Yiyecek',
+  'Tatlı',
+  'Kahvaltı',
+  'Genel'
+] as const;
 
 /** Yeni ürün ekleme şeması */
 export const CreateProductSchema = z.object({
   name: z.string().min(2, 'Ürün adı en az 2 karakter olmalı').max(100),
   price: z.number().positive('Fiyat pozitif olmalı'),
-  category: z.enum(VALID_CATEGORIES).default('genel'),
+  category: z.enum(VALID_CATEGORIES).default('Genel'),
 });
 
 /** Ürün güncelleme şeması (tüm alanlar opsiyonel) */

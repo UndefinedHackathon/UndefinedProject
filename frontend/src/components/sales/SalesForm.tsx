@@ -105,7 +105,9 @@ export default function SalesForm({ products, onSuccess, selectedDate }: SalesFo
               <Label>Ürün</Label>
               <Select value={productId} onValueChange={(v) => { if (v !== null) setProductId(v); }}>
                 <SelectTrigger className="w-full h-9">
-                  <SelectValue placeholder="Ürün seçin" />
+                  <SelectValue placeholder="Ürün seçin">
+                    {selectedProduct ? `${selectedProduct.name} — ₺${Number(selectedProduct.price).toFixed(2)}` : ""}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {products.map((p) => (

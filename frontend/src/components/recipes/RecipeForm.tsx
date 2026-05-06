@@ -238,7 +238,9 @@ export default function RecipeForm({ products, ingredients, onSuccess }: RecipeF
                             }}
                           >
                             <SelectTrigger className="w-full h-8 text-sm">
-                              <SelectValue placeholder="Seçiniz" />
+                              <SelectValue placeholder="Seçiniz">
+                                {selectedIng?.name}
+                              </SelectValue>
                             </SelectTrigger>
                             <SelectContent>
                               {ingredients.map((i) => (

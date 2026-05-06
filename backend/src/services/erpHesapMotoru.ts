@@ -27,10 +27,12 @@ export function hesaplaGunlukAnaliz(
 ): AnalizSonucu {
   const baslangicZamani = Date.now();
 
-  // 1. Ürün satış özeti ve ciro hesaplama
-  const urunSatisOzeti = hesaplaUrunSatisOzeti(urunler, gunlukSatislar);
+  // 1. Ürün satış özeti, ciro ve kâr hesaplama
+  const urunSatisOzeti = hesaplaUrunSatisOzeti(urunler, gunlukSatislar, malzemeler, receteler);
   const toplamSatisAdedi = urunSatisOzeti.reduce((t, u) => t + u.quantity, 0);
   const toplamGelir = urunSatisOzeti.reduce((t, u) => t + u.revenue, 0);
+  const toplamMaliyet = urunSatisOzeti.reduce((t, u) => t + u.cost, 0);
+  const toplamKar = urunSatisOzeti.reduce((t, u) => t + u.profit, 0);
 
   // 2. Teorik malzeme tüketimi
   const teorikTuketim = hesaplaTeorikTuketim(malzemeler, receteler, stoklar, gunlukSatislar);
@@ -53,7 +55,8 @@ export function hesaplaGunlukAnaliz(
   console.log(`✅ ERP Analiz tamamlandı: ${toplamSatisAdedi} satış, ${kritikStoklar.length} kritik stok, ${pisinmeSuresi}ms`);
 
   return {
-    toplamSatisAdedi, toplamGelir, urunSatisOzeti, teorikTuketim,
+    toplamSatisAdedi, toplamGelir, toplamMaliyet, toplamKar,
+    urunSatisOzeti, teorikTuketim,
     kritikStoklar, satinAlmaOnerisi, receteSapmasi,
     tedarikciMesajTaslagi, analizTarihi: new Date().toISOString(), pisinmeSuresi,
   };
@@ -63,18 +66,48 @@ export function hesaplaGunlukAnaliz(
 // Yardımcı Hesaplama Fonksiyonları
 // ============================================================
 
-/** Ürün bazlı satış özeti — hangi üründen kaç adet, ne kadar gelir */
-function hesaplaUrunSatisOzeti(urunler: Urun[], gunlukSatislar: GunlukSatis[]): UrunSatisOzeti[] {
+/** Ürün bazlı satış özeti — hangi üründen kaç adet, ne kadar gelir ve kâr */
+function hesaplaUrunSatisOzeti(
+  urunler: Urun[], 
+  gunlukSatislar: GunlukSatis[],
+  malzemeler: Malzeme[],
+  receteler: ReceteKalemi[]
+): UrunSatisOzeti[] {
   const satisMap = new Map<number, number>();
   for (const satis of gunlukSatislar) {
     satisMap.set(satis.productId, (satisMap.get(satis.productId) || 0) + satis.quantity);
+  }
+
+  // Her ürünün birim maliyetini reçetelerden hesapla
+  const urunBirimMaliyetleri = new Map<number, number>();
+  for (const recete of receteler) {
+    const malzeme = malzemeler.find(m => m.id === recete.ingredientId);
+    if (malzeme) {
+      const mevcutMaliyet = urunBirimMaliyetleri.get(recete.productId) || 0;
+      urunBirimMaliyetleri.set(
+        recete.productId, 
+        mevcutMaliyet + (recete.quantityPerUnit * malzeme.unitCost)
+      );
+    }
   }
 
   const ozet: UrunSatisOzeti[] = [];
   for (const [productId, quantity] of satisMap.entries()) {
     const urun = urunler.find((u) => u.id === productId);
     if (!urun) { console.warn(`⚠️ Satışı olan ürün bulunamadı: productId=${productId}`); continue; }
-    ozet.push({ productId, productName: urun.name, quantity, revenue: quantity * urun.price });
+    
+    const birimMaliyet = urunBirimMaliyetleri.get(productId) || 0;
+    const revenue = quantity * urun.price;
+    const cost = quantity * birimMaliyet;
+    
+    ozet.push({ 
+      productId, 
+      productName: urun.name, 
+      quantity, 
+      revenue,
+      cost: Math.round(cost * 100) / 100,
+      profit: Math.round((revenue - cost) * 100) / 100
+    });
   }
   ozet.sort((a, b) => b.quantity - a.quantity);
   return ozet;

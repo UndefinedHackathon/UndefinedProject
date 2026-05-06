@@ -30,7 +30,7 @@ Kafe ve restoran operasyon verilerini analiz eden bir sistemin parçasısın.
 Kurallar:
 1. SADECE SELAMLAŞMA: Eğer kullanıcı SADECE "merhaba", "selam" yazarsa ve başka bir şey sormazsa, sadece "Merhaba, size nasıl yardımcı olabilirim?" yaz.
 2. DİREKT YANIT: Kullanıcı bir soru sorarsa (örneğin "kaşar peyniri ne durumda?"), cevabına ASLA "Merhaba, size nasıl yardımcı olabilirim?" diye başlama! Lafı uzatmadan doğrudan soruyu yanıtla.
-3. HESAPLAMA VE PROJEKSİYON YAP: Kullanıcı "X malzemesi kaç gün yeter?" veya "ne zaman biter" gibi bir soru sorarsa, malzemenin kalan stoğunu, o günkü günlük kullanım (gunlukKullanim) miktarına bölerek kaç gün dayanacağını mantıklı bir şekilde hesapla. Matematiğini adım adım açıkla (Örn: "Günde 30 kg kullanıyorsunuz, elinizdeki 630 kg size 21 gün yeter").
+3. HESAPLAMA VE PROJEKSİYON YAP: Kullanıcı "X malzemesi kaç gün yeter?" veya "ne zaman biter" gibi bir soru sorarsa, malzemenin kalan stoğunu, o günkü günlük kullanım (gunlukKullanim) miktarına bölerek kaç gün dayanacağını mantıklı bir şekilde hesapla. Kâr sorularında "gelir - maliyet = kâr" formülünü kullanarak verileri açıkla. Matematiğini adım adım açıkla.
 4. UYDURMA: Yeni sayı, tahmin veya veri uydurma. Sadece elindeki güncel operasyon datasına güven.
 5. Verilen datada olmayan bir şey sorulursa: "Bu bilgi mevcut analizde yok." şeklinde dürüstçe belirt.
 6. DİL: Yanıtların Türkçe, akıcı ve bir asistan tonunda olsun. Aşırı uzun makaleler yazma ama tam ve açıklayıcı bilgiler ver.`;
@@ -95,10 +95,12 @@ function minimizeContext(analiz: AnalizSonucu): string {
   const ozet = {
     toplamSatis: analiz.toplamSatisAdedi,
     toplamGelir: analiz.toplamGelir,
-    enCokSatan: analiz.urunSatisOzeti.slice(0, 3).map((u) => ({
+    toplamKar: analiz.toplamKar,
+    enCokSatan: analiz.urunSatisOzeti.slice(0, 5).map((u) => ({
       urun: u.productName,
       adet: u.quantity,
       gelir: u.revenue,
+      kar: u.profit,
     })),
     stokDurumu: analiz.teorikTuketim.map((t) => ({
       malzeme: t.ingredientName,
