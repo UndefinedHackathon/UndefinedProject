@@ -1,6 +1,7 @@
 // [AI-Agent: Skills] Ana uygulama dosyası — React Router DOM ile sayfa routing yapısı
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from '@/components/ui/sonner';
+import { AuthGuard } from '@/components/AuthGuard';
 import AppLayout from '@/components/layout/AppLayout';
 import LoginPage from '@/pages/LoginPage';
 import RegisterPage from '@/pages/RegisterPage';
@@ -19,8 +20,8 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
-        {/* Ana uygulama — AppLayout içinde */}
-        <Route element={<AppLayout />}>
+        {/* Ana uygulama — AuthGuard + AppLayout içinde */}
+        <Route element={<AuthGuard><AppLayout /></AuthGuard>}>
           <Route path="/" element={<DashboardPage />} />
           <Route path="/materials" element={<MaterialsPage />} />
           <Route path="/products" element={<ProductsPage />} />
