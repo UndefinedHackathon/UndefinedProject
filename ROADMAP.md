@@ -192,7 +192,7 @@ UndefinedProject/
 - [ ] Serbest soru input alanı
 - [ ] Loading (thinking) state animasyonu
 - [ ] Zustand store copilot slice'ı bağla
-
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 #### 🟠 Samet — Copilot Backend
 - [x] `copilotService.ts` — system prompt + context hazırlama
 - [x] `copilot.route.ts` — POST /api/copilot endpoint'i
@@ -218,9 +218,9 @@ UndefinedProject/
 - [ ] Toast notification sistemi
 
 #### 🟠 Samet — Auth Middleware & n8n Backend
-- [ ] `middleware/auth.ts` — Firebase token doğrulama + DEMO_MODE bypass
-- [ ] `n8n.route.ts` — POST /api/n8n/supplier-message (opsiyonel)
-- [ ] Gemma fallback cevaplarını son kez kontrol et
+- [x] `middleware/auth.ts` — Firebase token doğrulama + DEMO_MODE bypass
+- [x] `n8n.route.ts` — POST /api/n8n/supplier-message (opsiyonel)
+- [x] Gemma fallback cevaplarını son kez kontrol et
 
 #### 🟢 Emre — Son Kontroller
 - [ ] Seed data ile tam senaryo testi
