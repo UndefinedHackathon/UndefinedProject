@@ -4,6 +4,7 @@
     "module": "commonjs",
     "lib": ["ES2020"],
     "types": ["node"],
+    "module": "node16",
     "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,
@@ -14,6 +15,9 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true
+    "sourceMap": true,
+    "moduleResolution": "node16",
+    "typeRoots": ["./node_modules/@types"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
