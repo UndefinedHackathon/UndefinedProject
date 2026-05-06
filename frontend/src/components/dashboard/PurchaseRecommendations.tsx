@@ -42,7 +42,7 @@ export function PurchaseRecommendations({ suggestions }: PurchaseRecommendations
       }));
 
       const payload = {
-        supplierMessage: 'Merhaba, aşağıdaki malzemeler için sipariş oluşturmak istiyoruz.',
+        supplierMessage: 'size gönderdiğimiz ürünleri tedarik etmemiz lazım gerekenleri arz ederiz',
         items,
       };
 
@@ -104,14 +104,14 @@ export function PurchaseRecommendations({ suggestions }: PurchaseRecommendations
                 >
                   <TableCell className="font-medium text-sm">{s.ingredient}</TableCell>
                   <TableCell className="text-right text-sm text-muted-foreground">
-                    {s.current} {s.unit}
+                    {Number(s.current).toFixed(2)} {s.unit}
                   </TableCell>
                   <TableCell className="text-right text-sm text-muted-foreground">
-                    {s.needed} {s.unit}
+                    {Number(s.needed).toFixed(2)} {s.unit}
                   </TableCell>
                   <TableCell className="text-right">
                     <Badge variant="outline" className="font-semibold text-xs">
-                      {s.order} {s.unit}
+                      {Number(s.order).toFixed(2)} {s.unit}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right font-semibold text-sm text-indigo-600 dark:text-indigo-400">

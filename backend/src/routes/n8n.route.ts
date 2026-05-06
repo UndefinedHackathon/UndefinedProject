@@ -9,7 +9,7 @@ import { z } from 'zod';
 
 const router = Router();
 
-const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL || 'http://localhost:5678/webhook/stockpilot-supplier';
+const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL || 'https://le7ox3ro.rcld.app/webhook-test/react-telegram-trigger';
 
 /** Tedarikçi mesajı request validasyonu */
 const SupplierMessageSchema = z.object({

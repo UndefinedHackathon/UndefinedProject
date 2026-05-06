@@ -77,7 +77,7 @@ export function CriticalStockCards({ items }: CriticalStockCardsProps) {
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-sm truncate">{item.name}</p>
                   <p className="text-xs text-muted-foreground">
-                    {item.current} / {item.min} {item.unit}
+                    {Number(item.current).toFixed(2)} / {Number(item.min).toFixed(2)} {item.unit}
                   </p>
                 </div>
                 {/* Stok yüzdesi progress bar */}
