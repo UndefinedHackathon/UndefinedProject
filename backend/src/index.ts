@@ -19,6 +19,7 @@ import analyzeRouter from './routes/analyze.route';
 import copilotRouter from './routes/copilot.route';
 import materialsRouter from './routes/materials.route';
 import productsRouter from './routes/products.route';
+import n8nRouter from './routes/n8n.route';
 import recipesRouter from './routes/recipes.route';
 import salesRouter from './routes/sales.route';
 
@@ -87,7 +88,7 @@ app.use('/api/analyze', analyzeRouter);
 app.use('/api/copilot', copilotRouter);
 
 // Aşama 5 — Opsiyonel:
-// app.use('/api/n8n',        n8nRouter);
+app.use('/api/n8n', n8nRouter);
 
 // ─── 404 Handler ────────────────────────────────────────────
 app.use((_req, res) => {
