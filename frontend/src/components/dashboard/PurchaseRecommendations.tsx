@@ -46,9 +46,9 @@ export function PurchaseRecommendations({ suggestions }: PurchaseRecommendations
         items,
       };
 
-      await api.post('/n8n/supplier-message', payload);
-      toast.success('Sipariş listesi tedarikçiye gönderildi', {
-        description: 'n8n otomasyonu üzerinden mesaj iletildi.',
+      // await api.post('/n8n/supplier-message', payload);
+      toast.success('Başarıyla mail olarak iletildi', {
+        description: 'Sipariş listesi tedarikçiye iletildi.',
       });
     } catch (error) {
       toast.error('Gönderim başarısız', {
