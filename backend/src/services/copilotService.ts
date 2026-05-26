@@ -4,9 +4,9 @@
 // Son Güncelleme: 2026-05-06
 
 import { callGemma } from './gemmaService';
-import { getLastAnalysis } from './databaseService';
+import { query } from '../db/pool';
 import type {
-  AnalizSonucu, CopilotCevap,
+  AnalizSonucu, CopilotCevap, AnalysisResultRow,
 } from '../types/stockpilot.types';
 
 // ═══════════════════════════════════════════════════════
@@ -79,8 +79,25 @@ const GENERIC_FALLBACK = '🤖 Şu an AI asistanı yanıt veremiyor. Analiz sonu
 // Yardımcı Fonksiyonlar
 // ═══════════════════════════════════════════════════════
 
-// [AI-Agent: Skills] getLastAnalysis() artık databaseService.ts'den import ediliyor.
-// Tek kaynak prensibi: analysis_results sorguları databaseService üzerinden yapılır.
+/**
+ * Son analiz sonucunu DB'den çeker.
+ * Copilot her soruda bunu context olarak Gemma'ya gönderir.
+ */
+export async function getLastAnalysis(): Promise<AnalizSonucu | null> {
+  try {
+    const result = await query<AnalysisResultRow>(
+      'SELECT result_data, ai_summary FROM analysis_results ORDER BY created_at DESC LIMIT 1'
+    );
+    if (result.rows.length === 0) return null;
+    return {
+      ...(result.rows[0].result_data as AnalizSonucu),
+      yoneticiyeOzet: result.rows[0].ai_summary || undefined,
+    };
+  } catch (err) {
+    console.error('❌ Son analiz çekme hatası:', err);
+    return null;
+  }
+}
 
 /**
  * Analiz verisini Gemma context'i için minimize eder.
